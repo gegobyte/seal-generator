@@ -41,7 +41,7 @@ const sealPlacements = [
 ];
 
 const printSeal = (pdfDoc, font) => {
-  const fontSize = 10;
+  const fontSize = 12;
   const lineSpacing = 40;
 
   sealPlacements.forEach((placement) => {
