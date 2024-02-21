@@ -75,8 +75,7 @@ const generateSealImage = async () => {
   const sealElement = document.getElementById("seal-container");
   const canvas = await html2canvas(sealElement, { scale: 1 });
 
-  // const hufPdfUrl = "/huf_form.pdf";
-  const hufPdfUrl = 'https://zerodha-common.s3.ap-south-1.amazonaws.com/Downloads-and-resources/ZerodhaNonindividualTD.pdf';
+  const hufPdfUrl = "/huf_form.pdf";
   const existingPdfBytes = await fetch(hufPdfUrl).then((res) =>
     res.arrayBuffer()
   );
