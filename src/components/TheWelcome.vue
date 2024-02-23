@@ -7,6 +7,7 @@ import DocumentationIcon from "./icons/IconDocumentation.vue";
 
 const firstLine = ref("");
 const secondLine = ref("");
+const fontSize = ref(12);
 
 const sealPlacements = [
   { page: 4, x: 400, y: 205 },
@@ -16,12 +17,12 @@ const sealPlacements = [
   { page: 8, x: 430, y: 545 },
   // { page: 9, x: 445, y: 80 },
   { page: 9, x: 435, y: 80 },
-  { page: 10, x: 50, y: 75 },
-  { page: 12, x: 50, y: 75 },
-  { page: 13, x: 50, y: 320 },
-  { page: 13, x: 50, y: 75 },
-  { page: 14, x: 50, y: 580 },
-  { page: 14, x: 50, y: 75 },
+  { page: 10, x: 30, y: 75 },
+  { page: 12, x: 40, y: 75 },
+  { page: 13, x: 40, y: 320 },
+  { page: 13, x: 40, y: 75 },
+  { page: 14, x: 40, y: 580 },
+  { page: 14, x: 40, y: 75 },
   { page: 17, x: 40, y: 68 },
   { page: 18, x: 40, y: 300 },
   { page: 18, x: 40, y: 68 },
@@ -41,7 +42,7 @@ const sealPlacements = [
 ];
 
 const printSeal = (pdfDoc, font) => {
-  const fontSize = 12;
+  // const fontSize = 12;
   const lineSpacing = 40;
 
   sealPlacements.forEach((placement) => {
@@ -50,23 +51,23 @@ const printSeal = (pdfDoc, font) => {
     page.drawText(firstLine.value, {
       x: placement.x,
       y: placement.y,
-      size: fontSize,
+      size: fontSize.value,
     });
 
     // Measure the width of the first line of text
-    const widthOfFirstLine = font.widthOfTextAtSize(firstLine.value, fontSize);
+    const widthOfFirstLine = font.widthOfTextAtSize(firstLine.value, fontSize.value);
 
     // Calculate the x-coordinate for the start of the second line of text
     const xStartSecondLine =
       placement.x +
       widthOfFirstLine -
-      font.widthOfTextAtSize(secondLine.value, fontSize);
+      font.widthOfTextAtSize(secondLine.value, fontSize.value);
 
     // Draw the second line of text aligned with the end of the first line
     page.drawText(secondLine.value, {
       x: xStartSecondLine,
       y: placement.y - lineSpacing, // Adjust Y-coordinate for the second line
-      size: fontSize,
+      size: fontSize.value,
     });
   });
 };
@@ -111,6 +112,8 @@ const generateSealImage = async () => {
     <template #content>
       <input type="text" v-model="firstLine" placeholder="Seal Line #1" />
       <input type="text" v-model="secondLine" placeholder="Seal Line #2" />
+      <label for="fontSizeInput">Font Size:</label>
+      <input id="fontSizeInput" type="number" v-model.number="fontSize" min="8" max="14" step="1" placeholder="Font Size" />
     </template>
     <template #seal-preview>
       <p>{{ firstLine }}</p>
