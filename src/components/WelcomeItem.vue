@@ -13,6 +13,12 @@
       <div class="seal-preview-wrapper">
         <div id="seal-container"><slot name="seal-preview"></slot></div>
       </div>
+      <div class="account-type-wrapper">
+        <slot name="account-type"></slot>
+      </div>
+      <div class="documents-wrapper">
+        <slot name="documents"></slot>
+      </div>
       <div class="generate-button-wrapper">
         <slot name="generate-button"></slot>
       </div>
@@ -61,10 +67,10 @@ h3 {
 }
 
 .generate-button-wrapper {
-  margin-top: 10px;
+  margin-top: 30px;
 }
 
-.generate-button-wrapper ::v-deep button {
+.generate-button-wrapper :deep(button) {
   font-size: 1.1em;
   width: 30%;
   padding: 10px 20px;
@@ -75,7 +81,7 @@ h3 {
   box-shadow: none;
 }
 
-.content-wrapper ::v-deep input {
+.content-wrapper :deep(input) {
   font-size: 1.1em;
   padding: 10px 20px;
   display: inline-block;
@@ -90,10 +96,40 @@ h3 {
   display: inline-block;
 }
 
-.seal-preview-wrapper ::v-deep p {
+.seal-preview-wrapper :deep(p) {
   text-align: right;
   font-weight: bold;
   line-height: normal;
+}
+
+.account-type-wrapper :deep(h3) {
+  margin-bottom: 8px;
+}
+
+.account-type-wrapper :deep(.radio-buttons-container) {
+  display: flex; /* Align radio buttons in a row */
+  align-items: center; /* Center-align items vertically */
+}
+
+.account-type-wrapper :deep(.radio-button-label) {
+  margin-right: 20px; /* Add some space between the radio buttons */
+}
+
+.documents-wrapper {
+  margin-top: 20px;
+}
+
+.documents-wrapper :deep(h3) {
+  margin-bottom: 8px;
+}
+
+.documents-wrapper :deep(.checkbox-container) {
+  display: flex; /* Align radio buttons in a row */
+  align-items: center; /* Center-align items vertically */
+}
+
+.documents-wrapper :deep(.checkbox-label) {
+  margin-right: 20px; /* Add some space between the radio buttons */
 }
 
 @media (min-width: 1024px) {
