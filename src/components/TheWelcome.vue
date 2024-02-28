@@ -23,40 +23,6 @@ const fontSize = ref(12);
 const accountTypeSelectedOption = ref(AccountType.HUF);
 const selectedDocuments = ref([DocumentsType.Equity, DocumentsType.Annexures]);
 
-/*
-const sealPlacements = [
-  { page: 4, x: 400, y: 205 },
-  { page: 5, x: 75, y: 75 },
-  // { page: 8, x: 450, y: 545 },
-  // { page: 9, x: 465, y: 80 },
-  { page: 8, x: 430, y: 545 },
-  // { page: 9, x: 445, y: 80 },
-  { page: 9, x: 435, y: 80 },
-  { page: 10, x: 30, y: 75 },
-  { page: 12, x: 40, y: 75 },
-  { page: 13, x: 40, y: 320 },
-  { page: 13, x: 40, y: 75 },
-  { page: 14, x: 40, y: 580 },
-  { page: 14, x: 40, y: 75 },
-  { page: 17, x: 40, y: 68 },
-  { page: 18, x: 40, y: 300 },
-  { page: 18, x: 40, y: 68 },
-  { page: 19, x: 40, y: 420 },
-  { page: 19, x: 40, y: 130 },
-  // { page: 21, x: 300, y: 500 },
-  // { page: 21, x: 300, y: 400 },
-  // { page: 21, x: 300, y: 310 },
-  // { page: 21, x: 300, y: 250 },
-  { page: 21, x: 250, y: 500 },
-  { page: 21, x: 250, y: 400 },
-  { page: 21, x: 250, y: 310 },
-  { page: 21, x: 250, y: 250 },
-  { page: 21, x: 40, y: 120 },
-  // { page: 23, x: 465, y: 760 },
-  { page: 23, x: 450, y: 760 },
-];
-*/
-
 const sealPlacements = {
   hufEquity: [
     { page: 4, x: 400, y: 205 },
@@ -132,7 +98,10 @@ const sealPlacements = {
     // { page: 23, x: 465, y: 760 },
     { page: 23, x: 450, y: 760 },
   ],
-  corporateAnnexures: [],
+  corporateAnnexures: [
+    { page: 4, x: 250, y: 60 },
+    { page: 7, x: 240, y: 330 },
+  ],
   corporateCommodity: [
     { page: 6, x: 430, y: 285 },
     { page: 8, x: 450, y: 585 },
@@ -143,41 +112,6 @@ const sealPlacements = {
   ],
   // Continue for other document types as needed
 };
-
-/*
-const printSeal = (pdfDoc, font) => {
-  const lineSpacing = 40;
-
-  sealPlacements.forEach((placement) => {
-    const page = pdfDoc.getPages()[placement.page - 1];
-
-    page.drawText(firstLine.value, {
-      x: placement.x,
-      y: placement.y,
-      size: fontSize.value,
-    });
-
-    // Measure the width of the first line of text
-    const widthOfFirstLine = font.widthOfTextAtSize(
-      firstLine.value,
-      fontSize.value
-    );
-
-    // Calculate the x-coordinate for the start of the second line of text
-    const xStartSecondLine =
-      placement.x +
-      widthOfFirstLine -
-      font.widthOfTextAtSize(secondLine.value, fontSize.value);
-
-    // Draw the second line of text aligned with the end of the first line
-    page.drawText(secondLine.value, {
-      x: xStartSecondLine,
-      y: placement.y - lineSpacing, // Adjust Y-coordinate for the second line
-      size: fontSize.value,
-    });
-  });
-};
-*/
 
 const printSeal = (pdfDoc, font, accountType, documentType) => {
   // Initialize an empty array for seal placements
