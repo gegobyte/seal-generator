@@ -54,6 +54,7 @@ const sealPlacements = {
     { page: 21, x: 40, y: 120 },
     // { page: 23, x: 465, y: 760 },
     { page: 23, x: 450, y: 760 },
+    { page: 24, x: 440, y: 325 },
   ],
   hufAnnexures: [
     { page: 1, x: 80, y: 195 },
@@ -97,6 +98,7 @@ const sealPlacements = {
     { page: 21, x: 40, y: 120 },
     // { page: 23, x: 465, y: 760 },
     { page: 23, x: 450, y: 760 },
+    { page: 24, x: 440, y: 325 },
   ],
   corporateAnnexures: [
     { page: 4, x: 250, y: 60 },
