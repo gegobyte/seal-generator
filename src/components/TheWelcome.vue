@@ -27,10 +27,7 @@ const sealPlacements = {
   hufEquity: [
     { page: 4, x: 400, y: 205 },
     { page: 5, x: 75, y: 75 },
-    // { page: 8, x: 450, y: 545 },
-    // { page: 9, x: 465, y: 80 },
     { page: 8, x: 430, y: 545 },
-    // { page: 9, x: 445, y: 80 },
     { page: 9, x: 435, y: 80 },
     { page: 10, x: 30, y: 75 },
     { page: 12, x: 40, y: 75 },
@@ -43,16 +40,11 @@ const sealPlacements = {
     { page: 18, x: 40, y: 68 },
     { page: 19, x: 40, y: 420 },
     { page: 19, x: 40, y: 130 },
-    // { page: 21, x: 300, y: 500 },
-    // { page: 21, x: 300, y: 400 },
-    // { page: 21, x: 300, y: 310 },
-    // { page: 21, x: 300, y: 250 },
     { page: 21, x: 250, y: 500 },
     { page: 21, x: 250, y: 400 },
     { page: 21, x: 250, y: 310 },
     { page: 21, x: 250, y: 250 },
     { page: 21, x: 40, y: 120 },
-    // { page: 23, x: 465, y: 760 },
     { page: 23, x: 450, y: 760 },
     { page: 24, x: 440, y: 325 },
   ],
@@ -71,10 +63,7 @@ const sealPlacements = {
   corporateEquity: [
     { page: 4, x: 400, y: 205 },
     { page: 5, x: 75, y: 75 },
-    // { page: 8, x: 450, y: 545 },
-    // { page: 9, x: 465, y: 80 },
     { page: 8, x: 430, y: 545 },
-    // { page: 9, x: 445, y: 80 },
     { page: 9, x: 435, y: 80 },
     { page: 10, x: 30, y: 75 },
     { page: 12, x: 40, y: 75 },
@@ -87,16 +76,11 @@ const sealPlacements = {
     { page: 18, x: 40, y: 68 },
     { page: 19, x: 40, y: 420 },
     { page: 19, x: 40, y: 130 },
-    // { page: 21, x: 300, y: 500 },
-    // { page: 21, x: 300, y: 400 },
-    // { page: 21, x: 300, y: 310 },
-    // { page: 21, x: 300, y: 250 },
     { page: 21, x: 250, y: 500 },
     { page: 21, x: 250, y: 400 },
     { page: 21, x: 250, y: 310 },
     { page: 21, x: 250, y: 250 },
     { page: 21, x: 40, y: 120 },
-    // { page: 23, x: 465, y: 760 },
     { page: 23, x: 450, y: 760 },
     { page: 24, x: 440, y: 325 },
   ],
@@ -112,7 +96,6 @@ const sealPlacements = {
     { page: 10, x: 450, y: 145 },
     { page: 11, x: 450, y: 145 },
   ],
-  // Continue for other document types as needed
 };
 
 const printSeal = (pdfDoc, font, accountType, documentType) => {
@@ -193,31 +176,6 @@ const generateSealImage = async () => {
     window.open(url, "_blank");
   }
 };
-
-/*
-const generateSealImage = async () => {
-  const hufEquityPdf = "/huf_equity.pdf";
-  const hufEquityPdfBytes = await fetch(hufEquityPdf).then((res) =>
-    res.arrayBuffer()
-  );
-
-  // Load a PDFDocument from the existing PDF bytes
-  const pdfDoc = await PDFDocument.load(hufEquityPdfBytes);
-
-  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-
-  printSeal(pdfDoc, font);
-
-  // Serialize the PDFDocument to bytes (a Uint8Array)
-  const pdfBytes = await pdfDoc.save();
-
-  // Create a blob and trigger download
-  const blob = new Blob([pdfBytes], { type: "application/pdf" });
-  const url = window.URL.createObjectURL(blob);
-
-  // Open the PDF in a new tab
-  window.open(url, "_blank");
-};*/
 </script>
 
 <template>
