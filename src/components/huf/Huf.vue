@@ -1,7 +1,6 @@
 <script setup>
 import Seal from "../common/Seal.vue";
 import FormGeneratorLogo from "../FormGeneratorLogo.vue";
-import ZMPSKSSeal from "../ZMPSKS.vue";
 import { ref } from "vue";
 import { PDFDocument, StandardFonts } from "pdf-lib";
 
@@ -17,6 +16,7 @@ const DocumentsType = Object.freeze({
 });
 
 const sealData = ref(null);
+const isGenerating = ref(false);
 
 const accountTypeSelectedOption = ref(AccountType.HUF);
 const selectedDocuments = ref([DocumentsType.Equity, DocumentsType.Annexures]);
@@ -176,28 +176,35 @@ const printSeal = (pdfDoc, font, accountType, documentType) => {
 };
 
 const generateHufDocuments = async () => {
-  for (const documentType of selectedDocuments.value) {
-    const pdfPath = `/${accountTypeSelectedOption.value.toLowerCase()}_${documentType.toLowerCase()}.pdf`;
-    const pdfBytes = await fetch(pdfPath).then((res) => res.arrayBuffer());
+  isGenerating.value = true;
+  try {
+    for (const documentType of selectedDocuments.value) {
+      const pdfPath = `/${accountTypeSelectedOption.value.toLowerCase()}_${documentType.toLowerCase()}.pdf`;
+      const pdfBytes = await fetch(pdfPath).then((res) => res.arrayBuffer());
 
-    // Load a PDFDocument from the existing PDF bytes
-    const pdfDoc = await PDFDocument.load(pdfBytes);
+      // Load a PDFDocument from the existing PDF bytes
+      const pdfDoc = await PDFDocument.load(pdfBytes);
 
-    // Embed the font for adding text
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+      // Embed the font for adding text
+      const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
-    // Apply the seal to the PDF, passing both selectedOption (account type) and documentType
-    printSeal(pdfDoc, font, accountTypeSelectedOption.value, documentType);
+      // Apply the seal to the PDF, passing both selectedOption (account type) and documentType
+      printSeal(pdfDoc, font, accountTypeSelectedOption.value, documentType);
 
-    // Serialize the PDFDocument to bytes (a Uint8Array)
-    const pdfBytesModified = await pdfDoc.save();
+      // Serialize the PDFDocument to bytes (a Uint8Array)
+      const pdfBytesModified = await pdfDoc.save();
 
-    // Create a blob and trigger download/open in a new tab
-    const blob = new Blob([pdfBytesModified], { type: "application/pdf" });
-    const url = window.URL.createObjectURL(blob);
+      // Create a blob and trigger download/open in a new tab
+      const blob = new Blob([pdfBytesModified], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
 
-    // Open the PDF in a new tab
-    window.open(url, "_blank");
+      // Open the PDF in a new tab
+      window.open(url, "_blank");
+    }
+  } catch (error) {
+    console.error("Error generating documents:", error);
+  } finally {
+    isGenerating.value = false;
   }
 };
 </script>
@@ -254,7 +261,10 @@ const generateHufDocuments = async () => {
         </div>
       </div>
       <div class="generate-button">
-        <button @click="generateHufDocuments">Generate</button>
+        <button @click="generateHufDocuments" :disabled="isGenerating">
+          <span v-if="!isGenerating">Generate</span>
+          <span v-else class="loader"></span>
+        </button>
       </div>
     </div>
   </div>
@@ -313,5 +323,29 @@ button {
 
 button:hover {
   background-color: #1a2832;
+}
+
+.loader {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  border-top: 2px solid #283b49;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 </style>
