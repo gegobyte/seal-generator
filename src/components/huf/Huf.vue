@@ -39,6 +39,11 @@ const getAdjustedHufEquityPlacements = () => {
   return applySealOffset(sealPlacements.hufEquity, offset);
 };
 
+const getAdjustedCorporateEquityPlacements = () => {
+  const offset = Number(sealData.value.ddpiOffset);
+  return applySealOffset(sealPlacements.corporateEquity, offset);
+};
+
 const sealPlacements = {
   hufEquity: [
     { page: 4, x: 400, y: 205 },
@@ -130,7 +135,7 @@ const printSeal = (pdfDoc, font, accountType, documentType) => {
     }
   } else if (accountType === "Corporate") {
     if (documentType === "Equity") {
-      placements = sealPlacements.corporateEquity;
+      placements = getAdjustedCorporateEquityPlacements();
     } else if (documentType === "Annexures") {
       placements = sealPlacements.corporateAnnexures;
     } else if (documentType === "Commodity") {
