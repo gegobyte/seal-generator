@@ -1,9 +1,9 @@
 <script setup>
-import html2canvas from "html2canvas";
-import { PDFDocument, StandardFonts } from "pdf-lib";
+import Seal from "../common/Seal.vue";
+import FormGeneratorLogo from "../FormGeneratorLogo.vue";
+import ZMPSKSSeal from "../ZMPSKS.vue";
 import { ref } from "vue";
-import WelcomeItem from "./WelcomeItem.vue";
-import DocumentationIcon from "./icons/IconDocumentation.vue";
+import { PDFDocument, StandardFonts } from "pdf-lib";
 
 const AccountType = Object.freeze({
   HUF: "HUF",
@@ -16,12 +16,28 @@ const DocumentsType = Object.freeze({
   Commodity: "Commodity",
 });
 
-const firstLine = ref("");
-const secondLine = ref("");
-const fontSize = ref(12);
+const sealData = ref(null);
 
 const accountTypeSelectedOption = ref(AccountType.HUF);
 const selectedDocuments = ref([DocumentsType.Equity, DocumentsType.Annexures]);
+
+const handleSealDataUpdate = (newSealData) => {
+  sealData.value = newSealData;
+};
+
+const applySealOffset = (placements, offset) => {
+  return placements.map((placement) => {
+    if (placement.page === 21 && placement.x === 250) {
+      return { ...placement, x: placement.x + offset };
+    }
+    return placement;
+  });
+};
+
+const getAdjustedHufEquityPlacements = () => {
+  const offset = Number(sealData.value.ddpiOffset);
+  return applySealOffset(sealPlacements.hufEquity, offset);
+};
 
 const sealPlacements = {
   hufEquity: [
@@ -106,7 +122,7 @@ const printSeal = (pdfDoc, font, accountType, documentType) => {
   // Example customization based on both account type and document type
   if (accountType === "HUF") {
     if (documentType === "Equity") {
-      placements = sealPlacements.hufEquity;
+      placements = getAdjustedHufEquityPlacements();
     } else if (documentType === "Annexures") {
       placements = sealPlacements.hufAnnexures;
     } else if (documentType === "Commodity") {
@@ -124,34 +140,37 @@ const printSeal = (pdfDoc, font, accountType, documentType) => {
 
   placements.forEach((placement) => {
     const page = pdfDoc.getPages()[placement.page - 1];
-    page.drawText(firstLine.value, {
+    page.drawText(sealData.value.firstLine, {
       x: placement.x,
       y: placement.y,
-      size: fontSize.value,
+      size: sealData.value.fontSize,
     });
 
     // Measure the width of the first line of text
     const widthOfFirstLine = font.widthOfTextAtSize(
-      firstLine.value,
-      fontSize.value
+      sealData.value.firstLine,
+      sealData.value.fontSize
     );
 
     // Calculate the x-coordinate for the start of the second line of text
     const xStartSecondLine =
       placement.x +
       widthOfFirstLine -
-      font.widthOfTextAtSize(secondLine.value, fontSize.value);
+      font.widthOfTextAtSize(
+        sealData.value.secondLine,
+        sealData.value.fontSize
+      );
 
     // Draw the second line of text aligned with the end of the first line
-    page.drawText(secondLine.value, {
+    page.drawText(sealData.value.secondLine, {
       x: xStartSecondLine,
       y: placement.y - lineSpacing, // Adjust Y-coordinate for the second line
-      size: fontSize.value,
+      size: sealData.value.fontSize,
     });
   });
 };
 
-const generateSealImage = async () => {
+const generateHufDocuments = async () => {
   for (const documentType of selectedDocuments.value) {
     const pdfPath = `/${accountTypeSelectedOption.value.toLowerCase()}_${documentType.toLowerCase()}.pdf`;
     const pdfBytes = await fetch(pdfPath).then((res) => res.arrayBuffer());
@@ -179,31 +198,10 @@ const generateSealImage = async () => {
 </script>
 
 <template>
-  <WelcomeItem>
-    <template #icon>
-      <DocumentationIcon />
-    </template>
-    <template #heading>Seal Text</template>
-    <template #content>
-      <input type="text" v-model="firstLine" placeholder="Seal Line #1" />
-      <input type="text" v-model="secondLine" placeholder="Seal Line #2" />
-      <label for="fontSizeInput">Font Size:</label>
-      <input
-        id="fontSizeInput"
-        type="number"
-        v-model.number="fontSize"
-        min="8"
-        max="14"
-        step="1"
-        placeholder="Font Size"
-      />
-    </template>
-    <template #seal-preview>
-      <p>{{ firstLine }}</p>
-      <br /><br />
-      <p>{{ secondLine }}</p>
-    </template>
-    <template #account-type>
+  <div class="grid-layout">
+    <FormGeneratorLogo />
+    <div>
+      <Seal @update:sealData="handleSealDataUpdate" />
       <div>
         <h3>Account Type</h3>
         <div class="radio-buttons-container">
@@ -225,9 +223,7 @@ const generateSealImage = async () => {
           </label>
         </div>
       </div>
-    </template>
-    <template #documents
-      ><div>
+      <div class="documents-container">
         <h3>Documents</h3>
         <div class="checkbox-container">
           <label class="checkbox-label">
@@ -251,10 +247,66 @@ const generateSealImage = async () => {
             Commodity
           </label>
         </div>
-      </div></template
-    >
-    <template #generate-button>
-      <button @click="generateSealImage">Generate</button>
-    </template>
-  </WelcomeItem>
+      </div>
+      <div class="generate-button">
+        <button @click="generateHufDocuments">Generate</button>
+      </div>
+    </div>
+  </div>
 </template>
+
+<style scoped>
+.grid-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.radio-buttons-container,
+.checkbox-container {
+  display: flex;
+  align-items: center;
+}
+
+.radio-button-label,
+.checkbox-label {
+  margin-right: 20px;
+}
+
+.documents-container {
+  margin-top: 20px;
+}
+
+h3 {
+  margin-bottom: 8px;
+}
+
+.generate-button {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.generate-button {
+  margin-top: 30px;
+}
+
+button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  background-color: #283b49;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #1a2832;
+}
+</style>
