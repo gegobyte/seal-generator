@@ -4,6 +4,23 @@ const corporateName = ref("");
 const address = ref("");
 const mobileNumber = ref("");
 const email = ref("");
+
+const corporateData = computed(() => ({
+  corporateName: corporateName.value,
+  address: address.value,
+  mobileNumber: mobileNumber.value,
+  email: email.value,
+}));
+
+const emit = defineEmits(["update:corporateData"]);
+
+watch(
+  [corporateName, address, mobileNumber, email],
+  () => {
+    emit("update:corporateData", corporateData.value);
+  },
+  { deep: true }
+);
 </script>
 
 <template>

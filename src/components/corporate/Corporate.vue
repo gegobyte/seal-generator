@@ -7,13 +7,21 @@ import CorporateBasicDetails from "./CorporateBasicDetails.vue";
 import { ref, computed, watch } from "vue";
 
 const submitForm = () => {};
+
+const corporateData = ref(null);
+
+const handleCorporateDataUpdate = (newCorporateData) => {
+  corporateData.value = newCorporateData;
+};
 </script>
 
 <template>
   <div class="corporate-form">
     <h1>Corporate Form Generator</h1>
     <form @submit.prevent="submitForm">
-      <CorporateBasicDetails />
+      <CorporateBasicDetails
+        @update:corporateData="handleCorporateDataUpdate"
+      />
 
       <div class="grid-layout">
         <Shareholders />
