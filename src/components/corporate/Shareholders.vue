@@ -1,6 +1,8 @@
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, watch } from "vue";
 const shareholders = ref([]);
+
+const emit = defineEmits(["update:shareholders"]);
 
 const addShareholder = () => {
   shareholders.value.push({
@@ -9,15 +11,10 @@ const addShareholder = () => {
     faceValue: 0,
     totalValue: 0,
     percentage: 0,
+    isPercentageManual: false,
   });
+  emit("update:shareholders", shareholders.value);
 };
-
-const totalShares = computed(() => {
-  return shareholders.value.reduce(
-    (total, shareholder) => total + Number(shareholder.shares),
-    0
-  );
-});
 
 const calculateShareholderValues = () => {
   const total = shareholders.value.reduce(
@@ -30,20 +27,22 @@ const calculateShareholderValues = () => {
     shareholders.value.forEach((shareholder, index) => {
       shareholder.totalValue = shareholder.shares * shareholder.faceValue;
 
-      if (index === shareholders.value.length - 1) {
-        // Last shareholder gets the remaining percentage
-        shareholder.percentage = Number(remainingPercentage.toFixed(2));
-      } else {
-        // Calculate percentage with higher precision, then round to 2 decimal places
-        const exactPercentage = (shareholder.shares / total) * 100;
-        shareholder.percentage = Number(exactPercentage.toFixed(2));
-        remainingPercentage -= shareholder.percentage;
+      if (!shareholder.isPercentageManual) {
+        if (index === shareholders.value.length - 1) {
+          shareholder.percentage = Number(remainingPercentage.toFixed(2));
+        } else {
+          const exactPercentage = (shareholder.shares / total) * 100;
+          shareholder.percentage = Number(exactPercentage.toFixed(2));
+          remainingPercentage -= shareholder.percentage;
+        }
       }
     });
   } else {
     shareholders.value.forEach((shareholder) => {
       shareholder.totalValue = 0;
-      shareholder.percentage = 0;
+      if (!shareholder.isPercentageManual) {
+        shareholder.percentage = 0;
+      }
     });
   }
 };
@@ -51,10 +50,22 @@ const calculateShareholderValues = () => {
 const deleteShareholder = (index) => {
   shareholders.value.splice(index, 1);
   calculateShareholderValues();
+  emit("update:shareholders", shareholders.value);
 };
 
-// Watch for changes in shareholders array and recalculate values
-watch(shareholders, calculateShareholderValues, { deep: true });
+const handlePercentageChange = (index) => {
+  shareholders.value[index].isPercentageManual = true;
+  emit("update:shareholders", shareholders.value);
+};
+
+watch(
+  shareholders,
+  () => {
+    calculateShareholderValues();
+    emit("update:shareholders", shareholders.value);
+  },
+  { deep: true }
+);
 </script>
 
 <template>
@@ -111,9 +122,11 @@ watch(shareholders, calculateShareholderValues, { deep: true });
           >Percentage of Holding:</label
         >
         <input
-          type="text"
+          type="number"
+          step="0.01"
           :id="`shareholderPercentage-${index}`"
-          :value="shareholder.percentage.toFixed(2)"
+          v-model="shareholder.percentage"
+          @input="handlePercentageChange(index)"
         />
       </div>
       <button

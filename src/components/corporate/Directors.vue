@@ -1,6 +1,8 @@
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, watch } from "vue";
 const directors = ref([]);
+
+const emit = defineEmits(["update:directors"]);
 
 const addDirector = () => {
   directors.value.push({
@@ -11,6 +13,7 @@ const addDirector = () => {
     din: "",
     isAuthorizedSignatory: false,
   });
+  emit("update:directors", directors.value);
 };
 
 const deleteDirector = (index) => {
@@ -21,13 +24,23 @@ const deleteDirector = (index) => {
       (director) => (director.isAuthorizedSignatory = false)
     );
   }
+  emit("update:directors", directors.value);
 };
 
 const setAuthorizedSignatory = (index) => {
   directors.value.forEach((director, i) => {
     director.isAuthorizedSignatory = i === index;
   });
+  emit("update:directors", directors.value);
 };
+
+watch(
+  directors,
+  () => {
+    emit("update:directors", directors.value);
+  },
+  { deep: true }
+);
 </script>
 
 <template>

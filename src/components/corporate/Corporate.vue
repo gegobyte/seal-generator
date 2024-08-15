@@ -1,17 +1,141 @@
 <script setup>
+import { PDFDocument } from "pdf-lib";
 import Seal from "../common/Seal.vue";
 import Shareholders from "./Shareholders.vue";
 import Directors from "./Directors.vue";
 import Documents from "./Documents.vue";
 import CorporateBasicDetails from "./CorporateBasicDetails.vue";
-import { ref, computed, watch } from "vue";
+import { generateShareholdingPatternPdf } from "./annexures/ShareholdingPattern";
+import { generateDirectorListPdf } from "./annexures/DirectorList";
+import { generateAnnexureAPdf } from "./annexures/AnnexureA";
+import { generateBoardResolutionPdf } from "./annexures/BoardResolution";
+import { ref } from "vue";
 
-const submitForm = () => {};
-
+const shareholdingPatternData = ref([]);
+const directorListData = ref([]);
+const sealData = ref(null);
 const corporateData = ref(null);
+
+const corporateSelectedDocuments = ref([]);
+const corporateFormGenerationPreference = ref("together");
+
+const handleSelectedDocumentsUpdate = (newValue) => {
+  corporateSelectedDocuments.value = newValue;
+};
+
+const handleFormGenerationPreferenceUpdate = (newValue) => {
+  corporateFormGenerationPreference.value = newValue;
+};
+
+const handleSealDataUpdate = (newSealData) => {
+  sealData.value = newSealData;
+};
 
 const handleCorporateDataUpdate = (newCorporateData) => {
   corporateData.value = newCorporateData;
+};
+
+const submitForm = async () => {
+  try {
+    const pdfFunctions = {
+      "Shareholding Pattern": generateShareholdingPatternPdf,
+      "List of Directors": generateDirectorListPdf,
+      "Annexure A": generateAnnexureAPdf,
+      "Board Resolution": generateBoardResolutionPdf,
+    };
+
+    const selectedPdfs = corporateSelectedDocuments.value.filter(
+      (doc) => pdfFunctions[doc]
+    );
+
+    if (corporateFormGenerationPreference.value === "together") {
+      const mergedPdf = await PDFDocument.create();
+
+      for (const docType of selectedPdfs) {
+        let pdfBytes;
+        switch (docType) {
+          case "Shareholding Pattern":
+            pdfBytes = await generateShareholdingPatternPdf(
+              shareholdingPatternData.value,
+              corporateData,
+              sealData
+            );
+            break;
+          case "List of Directors":
+            pdfBytes = await generateDirectorListPdf(
+              directorListData.value,
+              corporateData,
+              sealData
+            );
+            break;
+          case "Annexure A":
+            pdfBytes = await generateAnnexureAPdf(
+              directorListData.value,
+              corporateData,
+              sealData
+            );
+            break;
+          case "Board Resolution":
+            pdfBytes = await generateBoardResolutionPdf(
+              directorListData.value,
+              corporateData,
+              sealData
+            );
+            break;
+        }
+        const pdf = await PDFDocument.load(pdfBytes);
+        const copiedPages = await mergedPdf.copyPages(
+          pdf,
+          pdf.getPageIndices()
+        );
+        copiedPages.forEach((page) => mergedPdf.addPage(page));
+      }
+
+      const mergedPdfBytes = await mergedPdf.save();
+      const blob = new Blob([mergedPdfBytes], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      window.open(url, "_blank");
+    } else {
+      for (const docType of selectedPdfs) {
+        let pdfBytes;
+        switch (docType) {
+          case "Shareholding Pattern":
+            pdfBytes = await generateShareholdingPatternPdf(
+              shareholdingPatternData.value,
+              corporateData,
+              sealData
+            );
+            break;
+          case "List of Directors":
+            pdfBytes = await generateDirectorListPdf(
+              directorListData.value,
+              corporateData,
+              sealData
+            );
+            break;
+          case "Annexure A":
+            pdfBytes = await generateAnnexureAPdf(
+              directorListData.value,
+              corporateData,
+              sealData
+            );
+            break;
+          case "Board Resolution":
+            pdfBytes = await generateBoardResolutionPdf(
+              directorListData.value,
+              corporateData,
+              sealData
+            );
+            break;
+        }
+        const blob = new Blob([pdfBytes], { type: "application/pdf" });
+        const url = URL.createObjectURL(blob);
+        window.open(url, "_blank");
+      }
+    }
+  } catch (error) {
+    console.log("Error generating PDFs:", error);
+  }
 };
 </script>
 
@@ -24,13 +148,18 @@ const handleCorporateDataUpdate = (newCorporateData) => {
       />
 
       <div class="grid-layout">
-        <Shareholders />
-        <Directors />
+        <Shareholders v-model:shareholders="shareholdingPatternData" />
+        <Directors v-model:directors="directorListData" />
       </div>
 
       <div class="grid-layout">
-        <Seal />
-        <Documents />
+        <Seal @update:sealData="handleSealDataUpdate" />
+        <Documents
+          @update:selectedDocuments="handleSelectedDocumentsUpdate"
+          @update:formGenerationPreference="
+            handleFormGenerationPreferenceUpdate
+          "
+        />
       </div>
 
       <button type="submit" class="submit-button">Generate</button>

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, watch, onMounted } from "vue";
 
 const DocumentsType = Object.freeze({
   Equity: "Equity",
@@ -24,7 +24,29 @@ const selectedDocuments = ref([
   DocumentsType.Ubo,
 ]);
 
-const formGenerationPreference = ref("separate");
+const formGenerationPreference = ref("together");
+
+const emit = defineEmits([
+  "update:selectedDocuments",
+  "update:formGenerationPreference",
+]);
+
+onMounted(() => {
+  emit("update:selectedDocuments", selectedDocuments.value);
+  emit("update:formGenerationPreference", formGenerationPreference.value);
+});
+
+watch(
+  selectedDocuments,
+  (newValue) => {
+    emit("update:selectedDocuments", newValue);
+  },
+  { deep: true }
+);
+
+watch(formGenerationPreference, (newValue) => {
+  emit("update:formGenerationPreference", newValue);
+});
 </script>
 
 <template>
@@ -87,18 +109,18 @@ const formGenerationPreference = ref("separate");
         <label class="radio-label">
           <input
             type="radio"
-            value="separate"
-            v-model="formGenerationPreference"
-          />
-          Separately
-        </label>
-        <label class="radio-label">
-          <input
-            type="radio"
             value="together"
             v-model="formGenerationPreference"
           />
           Together
+        </label>
+        <label class="radio-label">
+          <input
+            type="radio"
+            value="separate"
+            v-model="formGenerationPreference"
+          />
+          Separately
         </label>
       </div>
     </div>
@@ -106,15 +128,6 @@ const formGenerationPreference = ref("separate");
 </template>
 
 <style scoped>
-/* .corporate-documents :deep(.checkbox-container) {
-  display: grid;
-  align-items: center;
-}
-
-.corporate-documents :deep(.checkbox-label) {
-  margin-right: 20px;
-} */
-
 .corporate-documents :deep(.checkbox-container) {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

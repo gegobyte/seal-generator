@@ -45,7 +45,7 @@ watch(
     <div class="grid-layout">
       <div class="form-group">
         <label for="address">Address:</label>
-        <textarea id="address" v-model="address" required></textarea>
+        <input type="text" id="address" v-model="address" required />
       </div>
 
       <div class="form-group">
