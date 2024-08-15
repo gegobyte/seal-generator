@@ -9,6 +9,7 @@ import { generateShareholdingPatternPdf } from "./annexures/ShareholdingPattern"
 import { generateDirectorListPdf } from "./annexures/DirectorList";
 import { generateAnnexureAPdf } from "./annexures/AnnexureA";
 import { generateBoardResolutionPdf } from "./annexures/BoardResolution";
+import { generateEquityPdf } from "../common/Equity";
 import { ref } from "vue";
 
 const shareholdingPatternData = ref([]);
@@ -42,6 +43,7 @@ const submitForm = async () => {
       "List of Directors": generateDirectorListPdf,
       "Annexure A": generateAnnexureAPdf,
       "Board Resolution": generateBoardResolutionPdf,
+      Equity: generateEquityPdf,
     };
 
     const selectedPdfs = corporateSelectedDocuments.value.filter(
@@ -81,6 +83,9 @@ const submitForm = async () => {
               corporateData,
               sealData
             );
+            break;
+          case "Equity":
+            pdfBytes = await generateEquityPdf(sealData);
             break;
         }
         const pdf = await PDFDocument.load(pdfBytes);
@@ -126,6 +131,9 @@ const submitForm = async () => {
               corporateData,
               sealData
             );
+            break;
+          case "Equity":
+            pdfBytes = await generateEquityPdf(sealData);
             break;
         }
         const blob = new Blob([pdfBytes], { type: "application/pdf" });
