@@ -1,8 +1,21 @@
 <script setup>
 import { ref, watch } from "vue";
+
 const directors = ref([]);
 
 const emit = defineEmits(["update:directors"]);
+
+const formatDateForInput = (date) => {
+  if (!date) return "";
+  const [day, month, year] = date.split("-");
+  return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+};
+
+const formatDateForStorage = (date) => {
+  if (!date) return "";
+  const [year, month, day] = date.split("-");
+  return `${day.padStart(2, "0")}-${month.padStart(2, "0")}-${year}`;
+};
 
 const addDirector = () => {
   directors.value.push({
@@ -18,7 +31,6 @@ const addDirector = () => {
 
 const deleteDirector = (index) => {
   directors.value.splice(index, 1);
-  // If we're deleting the authorized signatory, clear that status
   if (directors.value[index]?.isAuthorizedSignatory) {
     directors.value.forEach(
       (director) => (director.isAuthorizedSignatory = false)
@@ -34,10 +46,14 @@ const setAuthorizedSignatory = (index) => {
   emit("update:directors", directors.value);
 };
 
+const updateDob = (index, value) => {
+  directors.value[index].dob = value ? formatDateForStorage(value) : "";
+};
+
 watch(
   directors,
-  () => {
-    emit("update:directors", directors.value);
+  (newValue) => {
+    emit("update:directors", newValue);
   },
   { deep: true }
 );
@@ -75,7 +91,8 @@ watch(
         <input
           type="date"
           :id="`directorDOB-${index}`"
-          v-model="director.dob"
+          :value="formatDateForInput(director.dob)"
+          @input="updateDob(index, $event.target.value)"
           required
         />
       </div>
