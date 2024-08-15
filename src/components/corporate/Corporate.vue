@@ -10,6 +10,10 @@ import { generateDirectorListPdf } from "./annexures/DirectorList";
 import { generateAnnexureAPdf } from "./annexures/AnnexureA";
 import { generateBoardResolutionPdf } from "./annexures/BoardResolution";
 import { generateEquityPdf } from "../common/Equity";
+import { generateFatcaPdf } from "../common/Fatca";
+import { generateCommodityPdf } from "../common/Commodity";
+import { generateKycPdf } from "../common/Kyc";
+import { generateUboPdf } from "../common/Ubo";
 import { ref } from "vue";
 
 const shareholdingPatternData = ref([]);
@@ -44,11 +48,29 @@ const submitForm = async () => {
       "Annexure A": generateAnnexureAPdf,
       "Board Resolution": generateBoardResolutionPdf,
       Equity: generateEquityPdf,
+      FATCA: generateFatcaPdf,
+      Commodity: generateCommodityPdf,
+      KYC: generateKycPdf,
+      UBO: generateUboPdf,
     };
 
-    const selectedPdfs = corporateSelectedDocuments.value.filter(
-      (doc) => pdfFunctions[doc]
-    );
+    // Define the desired order of documents
+    const documentOrder = [
+      "Equity",
+      "FATCA",
+      "Commodity",
+      "Board Resolution",
+      "List of Directors",
+      "Shareholding Pattern",
+      "Annexure A",
+      "KYC",
+      "UBO",
+    ];
+
+    // Filter and sort the selected documents according to the defined order
+    const selectedPdfs = corporateSelectedDocuments.value
+      .filter((doc) => pdfFunctions[doc])
+      .sort((a, b) => documentOrder.indexOf(a) - documentOrder.indexOf(b));
 
     if (corporateFormGenerationPreference.value === "together") {
       const mergedPdf = await PDFDocument.create();
@@ -86,6 +108,18 @@ const submitForm = async () => {
             break;
           case "Equity":
             pdfBytes = await generateEquityPdf(sealData);
+            break;
+          case "FATCA":
+            pdfBytes = await generateFatcaPdf(sealData);
+            break;
+          case "Commodity":
+            pdfBytes = await generateCommodityPdf(sealData);
+            break;
+          case "KYC":
+            pdfBytes = await generateKycPdf(directorListData.value);
+            break;
+          case "UBO":
+            pdfBytes = await generateUboPdf(directorListData.value);
             break;
         }
         const pdf = await PDFDocument.load(pdfBytes);
@@ -134,6 +168,18 @@ const submitForm = async () => {
             break;
           case "Equity":
             pdfBytes = await generateEquityPdf(sealData);
+            break;
+          case "FATCA":
+            pdfBytes = await generateFatcaPdf(sealData);
+            break;
+          case "Commodity":
+            pdfBytes = await generateCommodityPdf(sealData);
+            break;
+          case "KYC":
+            pdfBytes = await generateKycPdf(directorListData.value);
+            break;
+          case "UBO":
+            pdfBytes = await generateUboPdf(directorListData.value);
             break;
         }
         const blob = new Blob([pdfBytes], { type: "application/pdf" });
