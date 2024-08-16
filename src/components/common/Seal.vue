@@ -35,7 +35,7 @@ watch(
         id="fontSizeInput"
         type="number"
         v-model.number="fontSize"
-        min="8"
+        min="6"
         max="14"
         step="1"
         placeholder="Font Size"
