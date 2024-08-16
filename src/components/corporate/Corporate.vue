@@ -119,7 +119,7 @@ const submitForm = async () => {
             pdfBytes = await generateKycPdf(directorListData.value);
             break;
           case "UBO":
-            pdfBytes = await generateUboPdf(directorListData.value);
+            pdfBytes = await generateUboPdf(shareholdingPatternData.value);
             break;
         }
         const pdf = await PDFDocument.load(pdfBytes);
@@ -179,7 +179,7 @@ const submitForm = async () => {
             pdfBytes = await generateKycPdf(directorListData.value);
             break;
           case "UBO":
-            pdfBytes = await generateUboPdf(directorListData.value);
+            pdfBytes = await generateUboPdf(shareholdingPatternData.value);
             break;
         }
         const blob = new Blob([pdfBytes], { type: "application/pdf" });

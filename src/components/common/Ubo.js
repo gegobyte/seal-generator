@@ -1,6 +1,6 @@
 import { PDFDocument } from "pdf-lib";
 
-export const generateUboPdf = async (directors) => {
+export const generateUboPdf = async (shareholders) => {
   try {
     const pdfPath = `/ubo.pdf`;
     const templatePdfBytes = await fetch(pdfPath).then((res) =>
@@ -9,13 +9,15 @@ export const generateUboPdf = async (directors) => {
 
     const mergedPdf = await PDFDocument.create();
 
-    for (const director of directors) {
-      const pdfDoc = await PDFDocument.load(templatePdfBytes);
-      const copiedPages = await mergedPdf.copyPages(
-        pdfDoc,
-        pdfDoc.getPageIndices()
-      );
-      copiedPages.forEach((page) => mergedPdf.addPage(page));
+    for (const shareholder of shareholders) {
+      if (shareholder.percentage >= 10) {
+        const pdfDoc = await PDFDocument.load(templatePdfBytes);
+        const copiedPages = await mergedPdf.copyPages(
+          pdfDoc,
+          pdfDoc.getPageIndices()
+        );
+        copiedPages.forEach((page) => mergedPdf.addPage(page));
+      }
     }
 
     const modifiedPdfBytes = await mergedPdf.save();
