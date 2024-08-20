@@ -4,18 +4,22 @@ const corporateName = ref("");
 const address = ref("");
 const mobileNumber = ref("");
 const email = ref("");
+const city = ref("");
+const state = ref("");
 
 const corporateData = computed(() => ({
   corporateName: corporateName.value,
   address: address.value,
   mobileNumber: mobileNumber.value,
   email: email.value,
+  city: city.value,
+  state: state.value,
 }));
 
 const emit = defineEmits(["update:corporateData"]);
 
 watch(
-  [corporateName, address, mobileNumber, email],
+  [corporateName, address, mobileNumber, email, city, state],
   () => {
     emit("update:corporateData", corporateData.value);
   },
@@ -27,7 +31,7 @@ watch(
   <div class="corporate-details">
     <div class="grid-layout">
       <div class="form-group">
-        <label for="corporateName">Corporate Name:</label>
+        <label for="corporateName">Partnership Name:</label>
         <input
           type="text"
           id="corporateName"
@@ -51,6 +55,18 @@ watch(
       <div class="form-group">
         <label for="email">Email:</label>
         <input type="text" id="email" v-model="email" required />
+      </div>
+    </div>
+
+    <div class="grid-layout">
+      <div class="form-group">
+        <label for="city">City:</label>
+        <input type="text" id="city" v-model="city" required />
+      </div>
+
+      <div class="form-group">
+        <label for="state">State:</label>
+        <input type="tel" id="state" v-model="state" required />
       </div>
     </div>
   </div>
