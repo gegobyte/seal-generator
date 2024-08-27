@@ -5,6 +5,7 @@ import Partners from "./Partners.vue";
 import Documents from "./Documents.vue";
 import PartnershipBasicDetails from "./PartnershipBasicDetails.vue";
 // import { generateDirectorListPdf } from "./annexures/DirectorList";
+import { generateAuthorityLetterPdf } from "./annexures/AuthorityLetter";
 import { generateAnnexureAPdf } from "./annexures/AnnexureA";
 // import { generateBoardResolutionPdf } from "./annexures/BoardResolution";
 import { generateEquityPdf } from "../common/Equity";
@@ -38,8 +39,10 @@ const handleCorporateDataUpdate = (newCorporateData) => {
 };
 
 const submitForm = async () => {
+  console.log(directorListData.value);
   try {
     const pdfFunctions = {
+      "Authority Letter": generateAuthorityLetterPdf,
       "Annexure A": generateAnnexureAPdf,
       Equity: generateEquityPdf,
       FATCA: generateFatcaPdf,
@@ -53,6 +56,7 @@ const submitForm = async () => {
       "Equity",
       "FATCA",
       "Commodity",
+      "Authority Letter",
       "Annexure A",
       "KYC",
       "UBO",
@@ -69,6 +73,13 @@ const submitForm = async () => {
       for (const docType of selectedPdfs) {
         let pdfBytes;
         switch (docType) {
+          case "Authority Letter":
+            pdfBytes = await generateAuthorityLetterPdf(
+              directorListData.value,
+              corporateData,
+              sealData
+            );
+            break;
           case "Annexure A":
             pdfBytes = await generateAnnexureAPdf(
               directorListData.value,
@@ -108,6 +119,13 @@ const submitForm = async () => {
       for (const docType of selectedPdfs) {
         let pdfBytes;
         switch (docType) {
+          case "Authority Letter":
+            pdfBytes = await generateAuthorityLetterPdf(
+              directorListData.value,
+              corporateData,
+              sealData
+            );
+            break;
           case "Annexure A":
             pdfBytes = await generateAnnexureAPdf(
               directorListData.value,
