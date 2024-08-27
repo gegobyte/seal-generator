@@ -10,7 +10,7 @@ export const generateUboPdf = async (shareholders) => {
     const mergedPdf = await PDFDocument.create();
 
     for (const shareholder of shareholders) {
-      if (shareholder.percentage >= 10) {
+      if (!("percentage" in shareholder) || shareholder.percentage >= 10) {
         const pdfDoc = await PDFDocument.load(templatePdfBytes);
         const copiedPages = await mergedPdf.copyPages(
           pdfDoc,

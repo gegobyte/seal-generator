@@ -4,10 +4,9 @@ import Seal from "../common/Seal.vue";
 import Partners from "./Partners.vue";
 import Documents from "./Documents.vue";
 import PartnershipBasicDetails from "./PartnershipBasicDetails.vue";
-// import { generateDirectorListPdf } from "./annexures/DirectorList";
 import { generateAuthorityLetterPdf } from "./annexures/AuthorityLetter";
+import { generateAnnexure4Pdf } from "./annexures/Annexure4";
 import { generateAnnexureAPdf } from "./annexures/AnnexureA";
-// import { generateBoardResolutionPdf } from "./annexures/BoardResolution";
 import { generateEquityPdf } from "../common/Equity";
 import { generateFatcaPdf } from "../common/Fatca";
 import { generateCommodityPdf } from "../common/Commodity";
@@ -39,10 +38,10 @@ const handleCorporateDataUpdate = (newCorporateData) => {
 };
 
 const submitForm = async () => {
-  console.log(directorListData.value);
   try {
     const pdfFunctions = {
       "Authority Letter": generateAuthorityLetterPdf,
+      "Annexure 4": generateAnnexure4Pdf,
       "Annexure A": generateAnnexureAPdf,
       Equity: generateEquityPdf,
       FATCA: generateFatcaPdf,
@@ -57,6 +56,7 @@ const submitForm = async () => {
       "FATCA",
       "Commodity",
       "Authority Letter",
+      "Annexure 4",
       "Annexure A",
       "KYC",
       "UBO",
@@ -80,47 +80,8 @@ const submitForm = async () => {
               sealData
             );
             break;
-          case "Annexure A":
-            pdfBytes = await generateAnnexureAPdf(
-              directorListData.value,
-              corporateData,
-              sealData
-            );
-            break;
-          case "Equity":
-            pdfBytes = await generateEquityPdf(sealData);
-            break;
-          case "FATCA":
-            pdfBytes = await generateFatcaPdf(sealData);
-            break;
-          case "Commodity":
-            pdfBytes = await generateCommodityPdf(sealData);
-            break;
-          case "KYC":
-            pdfBytes = await generateKycPdf(directorListData.value);
-            break;
-          // case "UBO":
-          //   pdfBytes = await generateUboPdf(shareholdingPatternData.value);
-          //   break;
-        }
-        const pdf = await PDFDocument.load(pdfBytes);
-        const copiedPages = await mergedPdf.copyPages(
-          pdf,
-          pdf.getPageIndices()
-        );
-        copiedPages.forEach((page) => mergedPdf.addPage(page));
-      }
-
-      const mergedPdfBytes = await mergedPdf.save();
-      const blob = new Blob([mergedPdfBytes], { type: "application/pdf" });
-      const url = URL.createObjectURL(blob);
-      window.open(url, "_blank");
-    } else {
-      for (const docType of selectedPdfs) {
-        let pdfBytes;
-        switch (docType) {
-          case "Authority Letter":
-            pdfBytes = await generateAuthorityLetterPdf(
+          case "Annexure 4":
+            pdfBytes = await generateAnnexure4Pdf(
               directorListData.value,
               corporateData,
               sealData
@@ -146,7 +107,60 @@ const submitForm = async () => {
             pdfBytes = await generateKycPdf(directorListData.value);
             break;
           case "UBO":
-            pdfBytes = await generateUboPdf(shareholdingPatternData.value);
+            pdfBytes = await generateUboPdf(directorListData.value);
+            break;
+        }
+        const pdf = await PDFDocument.load(pdfBytes);
+        const copiedPages = await mergedPdf.copyPages(
+          pdf,
+          pdf.getPageIndices()
+        );
+        copiedPages.forEach((page) => mergedPdf.addPage(page));
+      }
+
+      const mergedPdfBytes = await mergedPdf.save();
+      const blob = new Blob([mergedPdfBytes], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      window.open(url, "_blank");
+    } else {
+      for (const docType of selectedPdfs) {
+        let pdfBytes;
+        switch (docType) {
+          case "Authority Letter":
+            pdfBytes = await generateAuthorityLetterPdf(
+              directorListData.value,
+              corporateData,
+              sealData
+            );
+            break;
+          case "Annexure 4":
+            pdfBytes = await generateAnnexure4Pdf(
+              directorListData.value,
+              corporateData,
+              sealData
+            );
+            break;
+          case "Annexure A":
+            pdfBytes = await generateAnnexureAPdf(
+              directorListData.value,
+              corporateData,
+              sealData
+            );
+            break;
+          case "Equity":
+            pdfBytes = await generateEquityPdf(sealData);
+            break;
+          case "FATCA":
+            pdfBytes = await generateFatcaPdf(sealData);
+            break;
+          case "Commodity":
+            pdfBytes = await generateCommodityPdf(sealData);
+            break;
+          case "KYC":
+            pdfBytes = await generateKycPdf(directorListData.value);
+            break;
+          case "UBO":
+            pdfBytes = await generateUboPdf(directorListData.value);
             break;
         }
         const blob = new Blob([pdfBytes], { type: "application/pdf" });
