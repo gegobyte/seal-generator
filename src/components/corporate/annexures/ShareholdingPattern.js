@@ -2,6 +2,7 @@ import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import { createTable } from "../../common/pdfTableGenerator";
 import { createLetterhead } from "../../common/letterhead";
 import { centerText, drawMultilineText, placeSeal } from "../../common/helpers";
+import { format } from "date-fns";
 
 // Define A4 size in PDF points
 const A4_WIDTH = 595.276;
@@ -19,7 +20,7 @@ export const generateShareholdingPatternPdf = async (
 
   createLetterhead(page, regularFont, boldFont, corporateData);
 
-  const currentDate = new Date().toLocaleDateString();
+  const currentDate = format(new Date(), "dd-MM-yyyy");
   page.drawText(`Date: ${currentDate}`, {
     x: A4_WIDTH - 150,
     y: A4_HEIGHT - 125,
