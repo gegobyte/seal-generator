@@ -16,6 +16,26 @@ export const createTable = (
   const textHeight = 10;
   const padding = 5;
 
+  // Add this helper function to wrap text
+  const wrapText = (text, maxWidth, font, fontSize) => {
+    const words = text.split(" ");
+    const lines = [];
+    let currentLine = words[0];
+
+    for (let i = 1; i < words.length; i++) {
+      const word = words[i];
+      const width = font.widthOfTextAtSize(currentLine + " " + word, fontSize);
+      if (width < maxWidth - 2 * padding) {
+        currentLine += " " + word;
+      } else {
+        lines.push(currentLine);
+        currentLine = word;
+      }
+    }
+    lines.push(currentLine);
+    return lines;
+  };
+
   // Calculate actual header height based on content
   let maxHeaderLines = 0;
   headers.forEach((header) => {
@@ -61,44 +81,61 @@ export const createTable = (
     color: rgb(0, 0, 0),
   });
 
-  // Draw table content
+  // Update the table content drawing
+  let currentY = startY - headerHeight;
   if (Array.isArray(data) && data.length > 0) {
     data.forEach((row, rowIndex) => {
-      let currentX = startX;
+      let maxCellHeight = dataCellHeight;
       if (typeof row === "object" && row !== null) {
         fields.forEach((field, cellIndex) => {
           let cellValue;
           if (field === "sno") {
             cellValue = String(rowIndex + 1);
+          } else if (field === "signature") {
+            cellValue = ""; // Leave signature field empty
           } else {
             cellValue = row[field] !== undefined ? String(row[field]) : "";
           }
-          page.drawText(cellValue, {
-            x: currentX + padding,
-            y: startY - headerHeight - (rowIndex + 0.5) * dataCellHeight,
-            size: textHeight,
-            font: regularFont,
-            color: rgb(0, 0, 0),
+          const cellWidth = cellWidths[cellIndex] - 2 * padding;
+          const wrappedText = wrapText(
+            cellValue,
+            cellWidth,
+            regularFont,
+            textHeight
+          );
+          maxCellHeight = Math.max(
+            maxCellHeight,
+            wrappedText.length * textHeight + 2 * padding
+          );
+
+          wrappedText.forEach((line, lineIndex) => {
+            page.drawText(line, {
+              x:
+                startX +
+                cellWidths.slice(0, cellIndex).reduce((a, b) => a + b, 0) +
+                padding,
+              y: currentY - (lineIndex + 1) * textHeight - padding,
+              size: textHeight,
+              font: regularFont,
+              color: rgb(0, 0, 0),
+            });
           });
-          currentX += cellWidths[cellIndex];
         });
       } else {
         console.error(`Invalid row data at index ${rowIndex}:`, row);
       }
+      currentY -= maxCellHeight;
+
+      // Draw horizontal line after each row
+      page.drawLine({
+        start: { x: startX, y: currentY },
+        end: { x: startX + cellWidths.reduce((a, b) => a + b, 0), y: currentY },
+        thickness: 1,
+        color: rgb(0, 0, 0),
+      });
     });
   } else {
     console.error("Invalid or empty data passed to createTable:", data);
-  }
-
-  // Draw horizontal lines
-  for (let i = 0; i <= data.length; i++) {
-    const y = startY - headerHeight - i * dataCellHeight;
-    page.drawLine({
-      start: { x: startX, y },
-      end: { x: startX + cellWidths.reduce((a, b) => a + b, 0), y },
-      thickness: 1,
-      color: rgb(0, 0, 0),
-    });
   }
 
   // Draw vertical lines
@@ -106,19 +143,13 @@ export const createTable = (
   for (let i = 0; i <= cellWidths.length; i++) {
     page.drawLine({
       start: { x: lineX, y: startY },
-      end: {
-        x: lineX,
-        y: startY - headerHeight - data.length * dataCellHeight,
-      },
+      end: { x: lineX, y: currentY },
       thickness: 1,
       color: rgb(0, 0, 0),
     });
     lineX += cellWidths[i] || 0;
   }
 
-  // Calculate the end Y position of the table
-  const tableEndY = startY - headerHeight - data.length * dataCellHeight;
-
   // Return the end Y position of the table
-  return tableEndY;
+  return currentY;
 };
