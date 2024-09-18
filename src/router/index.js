@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import Huf from "../components/huf/Huf.vue";
 import Corporate from "../components/corporate/Corporate.vue";
 import Partnership from "../components/partnership/Partnership.vue";
+import Llp from "../components/llp/llp.vue";
 import SealPage from "../components/SealPage.vue";
 
 const routes = [
@@ -21,10 +22,15 @@ const routes = [
     component: Partnership,
   },
   {
+    path: "/llp",
+    name: "Llp",
+    component: Llp,
+  },
+  {
     path: "/seal",
     name: "Seal",
-    component: SealPage
-  }
+    component: SealPage,
+  },
 ];
 
 const router = createRouter({
