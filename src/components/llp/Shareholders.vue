@@ -7,44 +7,13 @@ const emit = defineEmits(["update:shareholders"]);
 const addShareholder = () => {
   shareholders.value.push({
     name: "",
-    shares: 0,
-    faceValue: 0,
-    totalValue: 0,
+    shares: "-",
+    faceValue: "-",
+    totalValue: "-",
     percentage: 0,
     isPercentageManual: false,
   });
   emit("update:shareholders", shareholders.value);
-};
-
-const calculateShareholderValues = () => {
-  const total = shareholders.value.reduce(
-    (sum, shareholder) => sum + Number(shareholder.shares),
-    0
-  );
-
-  if (total > 0) {
-    let remainingPercentage = 100;
-    shareholders.value.forEach((shareholder, index) => {
-      shareholder.totalValue = shareholder.shares * shareholder.faceValue;
-
-      if (!shareholder.isPercentageManual) {
-        if (index === shareholders.value.length - 1) {
-          shareholder.percentage = Number(remainingPercentage.toFixed(2));
-        } else {
-          const exactPercentage = (shareholder.shares / total) * 100;
-          shareholder.percentage = Number(exactPercentage.toFixed(2));
-          remainingPercentage -= shareholder.percentage;
-        }
-      }
-    });
-  } else {
-    shareholders.value.forEach((shareholder) => {
-      shareholder.totalValue = 0;
-      if (!shareholder.isPercentageManual) {
-        shareholder.percentage = 0;
-      }
-    });
-  }
 };
 
 const deleteShareholder = (index) => {
@@ -61,7 +30,6 @@ const handlePercentageChange = (index) => {
 watch(
   shareholders,
   () => {
-    calculateShareholderValues();
     emit("update:shareholders", shareholders.value);
   },
   { deep: true }
@@ -84,37 +52,6 @@ watch(
           :id="`shareholderName-${index}`"
           v-model="shareholder.name"
           required
-        />
-      </div>
-      <div class="form-group">
-        <label :for="`shareholderShares-${index}`"
-          >Number of Equity Shares:</label
-        >
-        <input
-          type="number"
-          :id="`shareholderShares-${index}`"
-          v-model="shareholder.shares"
-          required
-        />
-      </div>
-      <div class="form-group">
-        <label :for="`shareholderFaceValue-${index}`"
-          >Face Value per Share:</label
-        >
-        <input
-          type="number"
-          :id="`shareholderFaceValue-${index}`"
-          v-model="shareholder.faceValue"
-          required
-        />
-      </div>
-      <div class="form-group">
-        <label :for="`shareholderTotalValue-${index}`">Total Value:</label>
-        <input
-          type="number"
-          :id="`shareholderTotalValue-${index}`"
-          v-model="shareholder.totalValue"
-          readonly
         />
       </div>
       <div class="form-group">
