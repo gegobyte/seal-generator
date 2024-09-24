@@ -2,14 +2,7 @@ import { PDFDocument, StandardFonts } from "pdf-lib";
 import { placeSeal } from "./helpers";
 
 const sealPlacements = {
-  corporateCommodity: [
-    { page: 6, x: 430, y: 285 },
-    { page: 8, x: 450, y: 585 },
-    { page: 9, x: 450, y: 250 },
-    { page: 10, x: 450, y: 525 },
-    { page: 10, x: 450, y: 145 },
-    { page: 11, x: 450, y: 145 },
-  ],
+  corporateCommodity: [{ page: 1, x: 120, y: 220 }],
 };
 
 export const generateCommodityPdf = async (sealData) => {
