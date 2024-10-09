@@ -21,6 +21,8 @@ const isGenerating = ref(false);
 const accountTypeSelectedOption = ref(AccountType.HUF);
 const selectedDocuments = ref([DocumentsType.Equity, DocumentsType.Annexures]);
 
+const formGenerationPreference = ref("together");
+
 const handleSealDataUpdate = (newSealData) => {
   sealData.value = newSealData;
 };
@@ -164,28 +166,42 @@ const printSeal = (pdfDoc, font, accountType, documentType) => {
 const generateHufDocuments = async () => {
   isGenerating.value = true;
   try {
-    for (const documentType of selectedDocuments.value) {
-      const pdfPath = `/${accountTypeSelectedOption.value.toLowerCase()}_${documentType.toLowerCase()}.pdf`;
-      const pdfBytes = await fetch(pdfPath).then((res) => res.arrayBuffer());
+    if (formGenerationPreference.value === "together") {
+      const mergedPdf = await PDFDocument.create();
 
-      // Load a PDFDocument from the existing PDF bytes
-      const pdfDoc = await PDFDocument.load(pdfBytes);
+      for (const documentType of selectedDocuments.value) {
+        const pdfPath = `/${accountTypeSelectedOption.value.toLowerCase()}_${documentType.toLowerCase()}.pdf`;
+        const pdfBytes = await fetch(pdfPath).then((res) => res.arrayBuffer());
+        const pdfDoc = await PDFDocument.load(pdfBytes);
+        const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
-      // Embed the font for adding text
-      const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+        printSeal(pdfDoc, font, accountTypeSelectedOption.value, documentType);
 
-      // Apply the seal to the PDF, passing both selectedOption (account type) and documentType
-      printSeal(pdfDoc, font, accountTypeSelectedOption.value, documentType);
+        const copiedPages = await mergedPdf.copyPages(
+          pdfDoc,
+          pdfDoc.getPageIndices()
+        );
+        copiedPages.forEach((page) => mergedPdf.addPage(page));
+      }
 
-      // Serialize the PDFDocument to bytes (a Uint8Array)
-      const pdfBytesModified = await pdfDoc.save();
-
-      // Create a blob and trigger download/open in a new tab
-      const blob = new Blob([pdfBytesModified], { type: "application/pdf" });
+      const mergedPdfBytes = await mergedPdf.save();
+      const blob = new Blob([mergedPdfBytes], { type: "application/pdf" });
       const url = window.URL.createObjectURL(blob);
-
-      // Open the PDF in a new tab
       window.open(url, "_blank");
+    } else {
+      for (const documentType of selectedDocuments.value) {
+        const pdfPath = `/${accountTypeSelectedOption.value.toLowerCase()}_${documentType.toLowerCase()}.pdf`;
+        const pdfBytes = await fetch(pdfPath).then((res) => res.arrayBuffer());
+        const pdfDoc = await PDFDocument.load(pdfBytes);
+        const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+        printSeal(pdfDoc, font, accountTypeSelectedOption.value, documentType);
+
+        const pdfBytesModified = await pdfDoc.save();
+        const blob = new Blob([pdfBytesModified], { type: "application/pdf" });
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, "_blank");
+      }
     }
   } catch (error) {
     console.error("Error generating documents:", error);
@@ -243,6 +259,27 @@ const generateHufDocuments = async () => {
               v-model="selectedDocuments"
             />
             Commodity
+          </label>
+        </div>
+      </div>
+      <div class="form-generation-preference">
+        <h3>Form Generation Preference</h3>
+        <div class="radio-buttons-container">
+          <label class="radio-button-label">
+            <input
+              type="radio"
+              value="together"
+              v-model="formGenerationPreference"
+            />
+            Together
+          </label>
+          <label class="radio-button-label">
+            <input
+              type="radio"
+              value="separately"
+              v-model="formGenerationPreference"
+            />
+            Separately
           </label>
         </div>
       </div>
@@ -333,5 +370,9 @@ button:hover {
 button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+.form-generation-preference {
+  margin-top: 20px;
 }
 </style>
