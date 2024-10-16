@@ -107,7 +107,10 @@ const submitForm = async () => {
             pdfBytes = await generateKycPdf(shareholdingPatternData.value);
             break;
           case "UBO":
-            pdfBytes = await generateUboPdf(shareholdingPatternData.value);
+            pdfBytes = await generateUboPdf(
+              shareholdingPatternData.value,
+              sealData.value
+            );
             break;
         }
         const pdf = await PDFDocument.load(pdfBytes);
