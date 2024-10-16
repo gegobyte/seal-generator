@@ -11,7 +11,7 @@ import { generateEquityPdf } from "../common/Equity";
 import { generateFatcaPdf } from "../common/Fatca";
 import { generateCommodityPdf } from "../common/Commodity";
 import { generateKycPdf } from "../common/Kyc";
-import { generateUboPdf } from "./Ubo";
+import { generateUboPdf } from "../common/Ubo";
 import { ref } from "vue";
 
 const shareholdingPatternData = ref([]);

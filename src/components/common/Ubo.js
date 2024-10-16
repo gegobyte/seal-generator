@@ -28,7 +28,7 @@ export const generateUboPdf = async (shareholders, sealData, formType) => {
           );
           copiedPages.forEach((page) => mergedPdf.addPage(page));
         }
-      } else if (formType == "llp" || formType == "partnership") {
+      } else if (formType == "partnership" || formType == "llp") {
         if (!("percentage" in shareholder) || shareholder.percentage >= 15) {
           const pdfDoc = await PDFDocument.load(templatePdfBytes);
 
