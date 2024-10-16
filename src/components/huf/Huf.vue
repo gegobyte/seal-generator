@@ -1,7 +1,7 @@
 <script setup>
 import Seal from "../common/Seal.vue";
 import FormGeneratorLogo from "../FormGeneratorLogo.vue";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { PDFDocument, StandardFonts } from "pdf-lib";
 
 const AccountType = Object.freeze({
@@ -22,6 +22,20 @@ const accountTypeSelectedOption = ref(AccountType.HUF);
 const selectedDocuments = ref([DocumentsType.Equity, DocumentsType.Annexures]);
 
 const formGenerationPreference = ref("together");
+
+// Define the correct order of documents
+const correctDocumentOrder = [
+  DocumentsType.Equity,
+  DocumentsType.Annexures,
+  DocumentsType.Commodity,
+];
+
+// Compute the ordered documents based on the correct order
+const orderedDocuments = computed(() => {
+  return correctDocumentOrder.filter((doc) =>
+    selectedDocuments.value.includes(doc)
+  );
+});
 
 const handleSealDataUpdate = (newSealData) => {
   sealData.value = newSealData;
@@ -169,7 +183,7 @@ const generateHufDocuments = async () => {
     if (formGenerationPreference.value === "together") {
       const mergedPdf = await PDFDocument.create();
 
-      for (const documentType of selectedDocuments.value) {
+      for (const documentType of orderedDocuments.value) {
         const pdfPath = `/${accountTypeSelectedOption.value.toLowerCase()}_${documentType.toLowerCase()}.pdf`;
         const pdfBytes = await fetch(pdfPath).then((res) => res.arrayBuffer());
         const pdfDoc = await PDFDocument.load(pdfBytes);
@@ -189,7 +203,7 @@ const generateHufDocuments = async () => {
       const url = window.URL.createObjectURL(blob);
       window.open(url, "_blank");
     } else {
-      for (const documentType of selectedDocuments.value) {
+      for (const documentType of orderedDocuments.value) {
         const pdfPath = `/${accountTypeSelectedOption.value.toLowerCase()}_${documentType.toLowerCase()}.pdf`;
         const pdfBytes = await fetch(pdfPath).then((res) => res.arrayBuffer());
         const pdfDoc = await PDFDocument.load(pdfBytes);
@@ -227,38 +241,18 @@ const generateHufDocuments = async () => {
             />
             HUF
           </label>
-          <label class="radio-button-label">
-            <input
-              type="radio"
-              :value="AccountType.Corporate"
-              v-model="accountTypeSelectedOption"
-            />
-            Corporate
-          </label>
         </div>
       </div>
       <div class="documents-container">
         <h3>Documents</h3>
         <div class="checkbox-container">
-          <label class="checkbox-label">
-            <input type="checkbox" value="Equity" v-model="selectedDocuments" />
-            Equity
-          </label>
-          <label class="checkbox-label">
-            <input
-              type="checkbox"
-              value="Annexures"
-              v-model="selectedDocuments"
-            />
-            Annexures
-          </label>
-          <label class="checkbox-label">
-            <input
-              type="checkbox"
-              value="Commodity"
-              v-model="selectedDocuments"
-            />
-            Commodity
+          <label
+            class="checkbox-label"
+            v-for="doc in Object.values(DocumentsType)"
+            :key="doc"
+          >
+            <input type="checkbox" :value="doc" v-model="selectedDocuments" />
+            {{ doc }}
           </label>
         </div>
       </div>
