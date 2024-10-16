@@ -17,6 +17,7 @@ import { ref } from "vue";
 const shareholdingPatternData = ref([]);
 const sealData = ref(null);
 const corporateData = ref(null);
+const formType = ref("llp");
 
 const corporateSelectedDocuments = ref([]);
 const corporateFormGenerationPreference = ref("together");
@@ -109,7 +110,8 @@ const submitForm = async () => {
           case "UBO":
             pdfBytes = await generateUboPdf(
               shareholdingPatternData.value,
-              sealData.value
+              sealData,
+              formType.value
             );
             break;
         }
@@ -163,7 +165,11 @@ const submitForm = async () => {
             pdfBytes = await generateKycPdf(shareholdingPatternData.value);
             break;
           case "UBO":
-            pdfBytes = await generateUboPdf(shareholdingPatternData.value);
+            pdfBytes = await generateUboPdf(
+              shareholdingPatternData.value,
+              sealData,
+              formType.value
+            );
             break;
         }
         const blob = new Blob([pdfBytes], { type: "application/pdf" });
