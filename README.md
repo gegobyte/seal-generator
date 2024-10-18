@@ -1,29 +1,19 @@
-# vue-project
+# Non-Individual Forms Generator
 
-This template should help get you started developing with Vue 3 in Vite.
+Generate non-individual Zerodha account opening forms for HUF, Private Limited, Partnership and LLP with text based seal to eliminate all unclear and missing seal errors and to speeden up the account opening  process.
 
-## Recommended IDE Setup
+## HUF
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+HUF forms generator can be accessed at https://seal-generator.netlify.app/
 
-## Customize configuration
+## Partnership
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+Partnership forms generator can be accessed at https://seal-generator.netlify.app/partnership
 
-## Project Setup
+## Corporate
 
-```sh
-npm install
-```
+Corporate (Private Limited) forms generator can be accessed at https://seal-generator.netlify.app/corporate
 
-### Compile and Hot-Reload for Development
+## LLP
 
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
+LLP forms generator can be accessed at https://seal-generator.netlify.app/llp
