@@ -275,14 +275,44 @@ export const generateBoardResolutionPdf = async (
   corporateData,
   sealData
 ) => {
+  var authorizedSignatoryData = tableData.filter(
+    (row) => row.isAuthorizedSignatory === true
+  );
+  var reorderedTableData;
+
+  // If no authorized signatory is found, handle this case
+  if (authorizedSignatoryData.length === 0) {
+    authorizedSignatoryData = tableData;
+    reorderedTableData = tableData;
+  } else {
+    // Create a new array with authorized signatory at the start, followed by others
+    reorderedTableData = [
+      ...authorizedSignatoryData,
+      ...tableData.filter((row) => !row.isAuthorizedSignatory),
+    ];
+  }
+
   const pdfDoc = await PDFDocument.create();
   const regularFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
   const page1 = pdfDoc.addPage([A4_WIDTH, A4_HEIGHT]);
   const page2 = pdfDoc.addPage([A4_WIDTH, A4_HEIGHT]);
 
-  drawPage1(page1, regularFont, boldFont, corporateData, tableData);
-  drawPage2(page2, regularFont, boldFont, corporateData, tableData, sealData);
+  drawPage1(
+    page1,
+    regularFont,
+    boldFont,
+    corporateData,
+    authorizedSignatoryData
+  );
+  drawPage2(
+    page2,
+    regularFont,
+    boldFont,
+    corporateData,
+    reorderedTableData,
+    sealData
+  );
 
   const pdfBytes = await pdfDoc.save();
   return pdfBytes;
