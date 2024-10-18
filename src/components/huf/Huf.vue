@@ -226,62 +226,73 @@ const generateHufDocuments = async () => {
 </script>
 
 <template>
-  <div class="grid-layout">
-    <FormGeneratorLogo />
-    <div>
-      <Seal @update:sealData="handleSealDataUpdate" />
+  <div class="form-container">
+    <div class="header">
+      <h1>HUF Form Generator</h1>
+      <nav class="form-nav">
+        <a href="/" class="nav-link active">HUF</a>
+        <a href="/partnership" class="nav-link">Partnership</a>
+        <a href="/corporate" class="nav-link">Corporate</a>
+        <a href="/llp" class="nav-link">LLP</a>
+      </nav>
+    </div>
+    <div class="grid-layout">
+      <FormGeneratorLogo />
       <div>
-        <h3>Account Type</h3>
-        <div class="radio-buttons-container">
-          <label class="radio-button-label">
-            <input
-              type="radio"
-              :value="AccountType.HUF"
-              v-model="accountTypeSelectedOption"
-            />
-            HUF
-          </label>
+        <Seal @update:sealData="handleSealDataUpdate" />
+        <div>
+          <h3>Account Type</h3>
+          <div class="radio-buttons-container">
+            <label class="radio-button-label">
+              <input
+                type="radio"
+                :value="AccountType.HUF"
+                v-model="accountTypeSelectedOption"
+              />
+              HUF
+            </label>
+          </div>
         </div>
-      </div>
-      <div class="documents-container">
-        <h3>Documents</h3>
-        <div class="checkbox-container">
-          <label
-            class="checkbox-label"
-            v-for="doc in Object.values(DocumentsType)"
-            :key="doc"
-          >
-            <input type="checkbox" :value="doc" v-model="selectedDocuments" />
-            {{ doc }}
-          </label>
+        <div class="documents-container">
+          <h3>Documents</h3>
+          <div class="checkbox-container">
+            <label
+              class="checkbox-label"
+              v-for="doc in Object.values(DocumentsType)"
+              :key="doc"
+            >
+              <input type="checkbox" :value="doc" v-model="selectedDocuments" />
+              {{ doc }}
+            </label>
+          </div>
         </div>
-      </div>
-      <div class="form-generation-preference">
-        <h3>Form Generation Preference</h3>
-        <div class="radio-buttons-container">
-          <label class="radio-button-label">
-            <input
-              type="radio"
-              value="together"
-              v-model="formGenerationPreference"
-            />
-            Together
-          </label>
-          <label class="radio-button-label">
-            <input
-              type="radio"
-              value="separately"
-              v-model="formGenerationPreference"
-            />
-            Separately
-          </label>
+        <div class="form-generation-preference">
+          <h3>Form Generation Preference</h3>
+          <div class="radio-buttons-container">
+            <label class="radio-button-label">
+              <input
+                type="radio"
+                value="together"
+                v-model="formGenerationPreference"
+              />
+              Together
+            </label>
+            <label class="radio-button-label">
+              <input
+                type="radio"
+                value="separately"
+                v-model="formGenerationPreference"
+              />
+              Separately
+            </label>
+          </div>
         </div>
-      </div>
-      <div class="generate-button">
-        <button @click="generateHufDocuments" :disabled="isGenerating">
-          <span v-if="!isGenerating">Generate</span>
-          <span v-else class="loader"></span>
-        </button>
+        <div class="generate-button">
+          <button @click="generateHufDocuments" :disabled="isGenerating">
+            <span v-if="!isGenerating">Generate</span>
+            <span v-else class="loader"></span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -368,5 +379,35 @@ button:disabled {
 
 .form-generation-preference {
   margin-top: 20px;
+}
+
+.form-nav {
+  display: flex;
+}
+
+.nav-link {
+  padding: 5px 10px;
+  margin-left: 10px;
+  text-decoration: none;
+  color: #283b49;
+  transition: color 0.3s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: #1a2832;
+  text-decoration: underline;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+h1 {
+  margin: 0;
+  color: #283b49;
 }
 </style>

@@ -184,8 +184,16 @@ const submitForm = async () => {
 </script>
 
 <template>
-  <div class="corporate-form">
-    <h1>LLP Form Generator</h1>
+  <div class="form-container">
+    <div class="header">
+      <h1>LLP Form Generator</h1>
+      <nav class="form-nav">
+        <a href="/" class="nav-link">HUF</a>
+        <a href="/partnership" class="nav-link">Partnership</a>
+        <a href="/corporate" class="nav-link">Corporate</a>
+        <a href="/llp" class="nav-link active">LLP</a>
+      </nav>
+    </div>
     <form @submit.prevent="submitForm">
       <CorporateBasicDetails
         @update:corporateData="handleCorporateDataUpdate"
@@ -211,7 +219,7 @@ const submitForm = async () => {
 </template>
 
 <style scoped>
-.corporate-form {
+.form-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
@@ -220,9 +228,34 @@ const submitForm = async () => {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-h1 {
-  color: #283b49;
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
+}
+
+h1 {
+  margin: 0;
+  color: #283b49;
+}
+
+.form-nav {
+  display: flex;
+}
+
+.nav-link {
+  padding: 5px 10px;
+  margin-left: 10px;
+  text-decoration: none;
+  color: #283b49;
+  transition: color 0.3s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: #1a2832;
+  text-decoration: underline;
 }
 
 .add-button,
