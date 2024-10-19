@@ -19,15 +19,11 @@
         "url": "https://seal-generator.netlify.app/"
       },
       "repositoryUrl": {
-        "url": "https://github.com/gegobyte/seal-generator"
+        "url": "https://github.com/gegobyte/seal-generator",
+        "wellKnown": "https://github.com/example/zombo-app/blob/main/.well-known/funding-manifest-urls"
       },
-      "licenses": [
-        "MIT"
-      ],
-      "tags": [
-        "forms-generator",
-        "seal-generator"
-      ]
+      "licenses": ["MIT"],
+      "tags": ["forms-generator", "seal-generator"]
     }
   ],
   "funding": {
@@ -47,9 +43,7 @@
         "amount": 10000,
         "currency": "USD",
         "frequency": "one-time",
-        "channels": [
-          "mybank"
-        ]
+        "channels": ["mybank"]
       }
     ],
     "history": []
