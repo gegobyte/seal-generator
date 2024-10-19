@@ -20,7 +20,7 @@
       },
       "repositoryUrl": {
         "url": "https://github.com/gegobyte/seal-generator",
-        "wellKnown": "https://github.com/example/zombo-app/blob/main/.well-known/funding-manifest-urls"
+        "wellKnown": "https://github.com/gegobyte/seal-generator/blob/main/public/.well-known/funding-manifest-urls"
       },
       "licenses": ["MIT"],
       "tags": ["forms-generator", "seal-generator"]
